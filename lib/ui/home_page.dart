@@ -1,11 +1,15 @@
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:flutterreminderapp/controllers/task_controller.dart';
+import 'package:flutterreminderapp/models/task.dart';
 import 'package:flutterreminderapp/services/notification_services.dart';
 import 'package:flutterreminderapp/services/theme_services.dart';
 import 'package:flutterreminderapp/ui/add_task_bar.dart';
 import 'package:flutterreminderapp/ui/theme.dart';
 import 'package:flutterreminderapp/ui/widgets/button.dart';
+import 'package:flutterreminderapp/ui/widgets/task_tile.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -19,17 +23,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   DateTime _selectedDate = DateTime.now();
+  final _taskController = Get.put(TaskController());
   var notifyHelper;
+
   @override
   void initState() {
     super.initState();
     notifyHelper=NotifyHelper();
     notifyHelper.initializeNotification();
     notifyHelper.requestIOSPermissions();
+    setState((){
+      print("I am here");
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    print("build method called");
     return Scaffold(
       appBar: _appBar(),
       backgroundColor: context.theme.backgroundColor,
@@ -37,9 +47,61 @@ class _HomePageState extends State<HomePage> {
         children: [
           _addTaskBar(),
           _addDateBar(),
+          SizedBox(height: 10,),
+          _showTasks(),
         ],
       ),
     );
+  }
+
+  _showTasks(){
+    return Expanded(
+      child: Obx((){
+        return ListView.builder(
+          itemCount: _taskController.taskList.length,
+
+          itemBuilder: (_, index){
+            print(_taskController.taskList.length);
+            // return GestureDetector(
+            //   onTap:(){
+            //     _taskController.delete(_taskController.taskList[index]);
+            //     _taskController.getTasks();
+            //   },
+            // return Container(
+            //     width: 100,
+            //     height: 50,
+            //     color: Colors.green,
+            //     margin: const EdgeInsets.only(bottom: 10),
+            //     child: Text(
+            //       _taskController.taskList[index].title.toString()
+            //     ),                    
+            // );
+            return AnimationConfiguration.staggeredList(
+              position: index,
+              child: SlideAnimation(
+                child: FadeInAnimation(
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap:(){
+                          //print("Tapped");
+                          _showBottomSheet(context, _taskController.taskList[index]);
+                        },
+                        child: TaskTile(_taskController.taskList[index]),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            );
+          }
+        );
+      }),
+    );
+  }
+
+  _showBottomSheet(BuildContext context, Task task){
+
   }
 
   _addDateBar(){
@@ -101,7 +163,10 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          MyButton(label: "+ Add Task", onTap: ()=> Get.to(AddTaskPage()))
+          MyButton(label: "+ Add Task", onTap: () async{
+            await Get.to(()=>AddTaskPage());
+            _taskController.getTasks();
+          })
         ],
       ),
     );
