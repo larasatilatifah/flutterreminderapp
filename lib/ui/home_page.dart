@@ -61,7 +61,9 @@ class _HomePageState extends State<HomePage> {
           itemCount: _taskController.taskList.length,
 
           itemBuilder: (_, index){
-            print(_taskController.taskList.length);
+            //print(_taskController.taskList.length);
+            Task task = _taskController.taskList[index];
+            print(task.toJson());
             // return GestureDetector(
             //   onTap:(){
             //     _taskController.delete(_taskController.taskList[index]);
@@ -76,24 +78,57 @@ class _HomePageState extends State<HomePage> {
             //       _taskController.taskList[index].title.toString()
             //     ),                    
             // );
-            return AnimationConfiguration.staggeredList(
-              position: index,
-              child: SlideAnimation(
-                child: FadeInAnimation(
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap:(){
-                          //print("Tapped");
-                          _showBottomSheet(context, _taskController.taskList[index]);
-                        },
-                        child: TaskTile(_taskController.taskList[index]),
-                      )
-                    ],
+            if(task.repeat=='Daily') {
+              DateTime date = DateFormat.jm().parse(task.startTime.toString());
+              var myTime = DateFormat("HH:mm").format(date);
+              notifyHelper.scheduledNotification(
+                int.parse(myTime.toString().split(":")[0]),
+                int.parse(myTime.toString().split(":")[1]),
+                task
+              );
+              return AnimationConfiguration.staggeredList(
+                position: index,
+                child: SlideAnimation(
+                  child: FadeInAnimation(
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap:(){
+                            //print("Tapped");
+                            _showBottomSheet(context, task);
+                          },
+                          child: TaskTile(task),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              )
-            );
+                )
+              );
+            };
+
+            if(task.date==DateFormat.yMd().format(_selectedDate)){
+              return AnimationConfiguration.staggeredList(
+                position: index,
+                child: SlideAnimation(
+                  child: FadeInAnimation(
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap:(){
+                            //print("Tapped");
+                            _showBottomSheet(context, task);
+                          },
+                          child: TaskTile(task),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              );
+            } else{
+              return Container();
+            }
+            
           }
         );
       }),
@@ -225,8 +260,10 @@ class _HomePageState extends State<HomePage> {
             color: Colors.grey
           )
         ),
-        onDateChange: (date){
-          _selectedDate = date;
+        onDateChange: (date){          
+          setState(() {
+            _selectedDate = date;
+          });
         },
       ),
     );
@@ -274,7 +311,7 @@ class _HomePageState extends State<HomePage> {
             title: "Theme Changed",
             body: Get.isDarkMode?"Activated Light Theme":"Activated Dark Theme"
           );
-          notifyHelper.scheduledNotification();
+          //notifyHelper.scheduledNotification();
         },
         child: Icon(
           Get.isDarkMode ? Icons.wb_sunny_outlined:Icons.nightlight_round,
