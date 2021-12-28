@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterreminderapp/services/theme_services.dart';
 import 'package:flutterreminderapp/ui/home_page.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutterreminderapp/ui/splash_screen.dart';
 import 'package:flutterreminderapp/ui/theme.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_storage/get_storage.dart';
@@ -28,7 +29,9 @@ class MyApp extends StatelessWidget {
       darkTheme: Themes.dark,
       themeMode: ThemeService().theme,
 
-      home: HomePage()
+      // home: HomePage()
+      home: SplashScreen()
+      
     );
   }
 }

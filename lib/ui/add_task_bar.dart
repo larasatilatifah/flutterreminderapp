@@ -46,11 +46,14 @@ class _AddTaskPageState extends State<AddTaskPage> {
         padding: const EdgeInsets.only(left: 20, right:20),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
+                
                 "Add Task",
+                
                 style: HeadingStyle,
+                // style: Center,
               ),
               MyInputField(title: "Title", hint: "Enter your title", controller: _titleController,),
               MyInputField(title: "Note", hint: "Enter your note", controller: _noteController,),
@@ -70,7 +73,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 children: [
                   Expanded(
                     child: MyInputField(
-                      title: "Start Date",
+                      title: "Start Time",
                       hint: _startTime,
                       widget: IconButton(
                         onPressed: (){
@@ -86,7 +89,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   SizedBox(width: 12,),
                   Expanded(
                     child: MyInputField(
-                      title: "End Date",
+                      title: "End Time",
                       hint: _endTime,
                       widget: IconButton(
                         onPressed: (){
@@ -281,7 +284,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     var pickedTime = await _showTimePicker();
     String _formatedTime = pickedTime.format(context);
     if(pickedTime==null){
-      print("Time canceld");
+      print("Time cancel");
     } else if(isStartTime==true){
       setState(() {
         _startTime = _formatedTime;

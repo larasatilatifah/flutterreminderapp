@@ -155,8 +155,9 @@ class _HomePageState extends State<HomePage> {
             ),
             Spacer(),
             task.isCompleted==1
-            ?Container()
-            : _bottomSheetButton(
+            ?Container():
+
+            _bottomSheetButton(
               label: "Task Completed",
               onTap: (){
                 _taskController.markTaskCompleted(task.id!);
@@ -180,6 +181,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               height: 20,
             ),
+            
             _bottomSheetButton(
               label: "Close",
               onTap: (){
@@ -290,10 +292,13 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          MyButton(label: "+ Add Task", onTap: () async{
-            await Get.to(()=>AddTaskPage());
-            _taskController.getTasks();
-          })
+          MyButton(
+            label: "+ Add Task",
+            onTap: () async{
+              await Get.to(()=>AddTaskPage());
+              _taskController.getTasks();
+            }
+          )
         ],
       ),
     );
